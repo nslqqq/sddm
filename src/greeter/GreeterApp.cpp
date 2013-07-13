@@ -60,6 +60,30 @@ namespace SDDM {
         return value;
     }
 
+    int qtVersion() {
+        QStringList list = QString(qVersion()).split('.');
+        bool errors = false;
+        int version = 0;
+
+        if (list.length() >= 3) {
+            bool ok = true;
+            int major = list[0].toInt(&ok);
+            errors = errors || !ok;
+            int minor = list[1].toInt(&ok);
+            errors = errors || !ok;
+            int patch = list[2].toInt(&ok);
+            errors = errors || !ok;
+
+            version = (major << 16) || (minor << 8) || patch;
+        } else
+            errors = true;
+
+        if (errors)
+            qDebug() << "Can't parse Qt version: " << qVersion();
+
+        return version;
+    }
+
     GreeterApp *GreeterApp::self = nullptr;
 
     GreeterApp::GreeterApp(int argc, char **argv) :
@@ -143,6 +167,10 @@ namespace SDDM {
         m_view->rootContext()->setContextProperty("sddm", m_proxy);
         m_view->rootContext()->setContextProperty("keyboard", m_keyboard);
 
+        // FIXME: Qt5.1 doesn't set root cursor
+        if (qtVersion() >= QT_VERSION_CHECK(5, 1, 0))
+            setOverrideCursor(Qt::ArrowCursor);
+
         // get theme main script
         QString mainScript = QString("%1/%2").arg(themePath).arg(m_metadata->mainScript());
 
@@ -160,10 +188,11 @@ namespace SDDM {
 
     void GreeterApp::show() {
         QRect rect = m_screenModel->geometry();
-#ifdef USE_QT5
-        // FIXME: This prevents QML flickering
-        rect.setWidth(rect.width() + 1);
-#endif
+
+        // FIXME: Qt5.1 QML flickering workaround
+        if (qtVersion() >= QT_VERSION_CHECK(5, 1, 0))
+            rect.setWidth(rect.width() + 1);
+
         m_view->setGeometry(rect);
 #ifdef USE_QT5
         m_view->showFullScreen();

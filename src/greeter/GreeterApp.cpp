@@ -168,8 +168,10 @@ namespace SDDM {
         m_view->rootContext()->setContextProperty("keyboard", m_keyboard);
 
         // FIXME: Qt5.1 doesn't set root cursor
-        if (qtVersion() >= QT_VERSION_CHECK(5, 1, 0))
+        if (qtVersion() >= QT_VERSION_CHECK(5, 1, 0)) {
             setOverrideCursor(Qt::ArrowCursor);
+            m_view->setCursor(Qt::ArrowCursor);
+        }
 
         // get theme main script
         QString mainScript = QString("%1/%2").arg(themePath).arg(m_metadata->mainScript());

@@ -74,7 +74,7 @@ namespace SDDM {
             int patch = list[2].toInt(&ok);
             errors = errors || !ok;
 
-            version = (major << 16) || (minor << 8) || patch;
+            version = (major << 16) | (minor << 8) | patch;
         } else
             errors = true;
 

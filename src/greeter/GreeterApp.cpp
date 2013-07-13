@@ -159,7 +159,12 @@ namespace SDDM {
     }
 
     void GreeterApp::show() {
-        m_view->setGeometry(m_screenModel->geometry());
+        QRect rect = m_screenModel->geometry();
+#ifdef USE_QT5
+        // FIXME: This prevents QML flickering
+        rect.setWidth(rect.width() + 1);
+#endif
+        m_view->setGeometry(rect);
 #ifdef USE_QT5
         m_view->showFullScreen();
 #endif

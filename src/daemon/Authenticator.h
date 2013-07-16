@@ -24,6 +24,9 @@
 
 namespace SDDM {
     class Session;
+#ifdef USE_PAM
+    class PamService;
+#endif
 
     class AuthenticatorPrivate;
     class Authenticator : public QObject {
@@ -47,6 +50,9 @@ namespace SDDM {
         bool m_started { false };
 
         Session *process { nullptr };
+#ifdef USE_PAM
+        PamService *m_pam { nullptr };
+#endif
     };
 }
 

@@ -74,8 +74,8 @@ Rectangle {
         Image {
             id: rectangle
             anchors.centerIn: parent
-            width: Math.max(320, mainColumn.implicitWidth + 40)
-            height: Math.max(320, mainColumn.implicitHeight + 40)
+            width: Math.max(320, mainColumn.implicitWidth + 50)
+            height: Math.max(320, mainColumn.implicitHeight + 50)
 
             source: "rectangle.png"
 
@@ -86,9 +86,14 @@ Rectangle {
                 Text {
                     anchors.horizontalCenter: parent.horizontalCenter
                     color: "black"
+                    verticalAlignment: Text.AlignVCenter
+                    height: text.implicitHeight
+                    width: parent.width
                     text: textConstants.welcomeText.arg(sddm.hostName)
                     wrapMode: Text.WordWrap
                     font.pixelSize: 24
+                    elide: Text.ElideRight
+                    horizontalAlignment: Text.AlignHCenter
                 }
 
                 Column {

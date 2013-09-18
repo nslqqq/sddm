@@ -176,7 +176,8 @@ namespace SDDM {
             m_started = true;
 
             // start session
-            m_authenticator->start(daemonApp->configuration()->autoUser(), daemonApp->configuration()->lastSessions());
+            QString userName = daemonApp->configuration()->autoUser();
+            m_authenticator->start(userName, daemonApp->configuration()->lastSessions()[userName].toString());
 
             // return
             return;
@@ -245,10 +246,14 @@ namespace SDDM {
             return;
         }
 
+        // build updated last sessions map
+        QVariantMap lastSessions = daemonApp->configuration()->lastSessions();
+        lastSessions[user] = session;
+
         // save last user and last session
         daemonApp->configuration()->setLastUser(user);
-        daemonApp->configuration()->setLastSessions(session);
-        daemonApp->configuration()->save();
+        daemonApp->configuration()->setLastSessions(lastSessions);
+        daemonApp->configuration()->saveState();
 
         // emit signal
         emit loginSucceeded(socket);

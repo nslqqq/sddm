@@ -35,7 +35,7 @@ namespace SDDM {
         ~Configuration();
 
         void load();
-        void save();
+        void saveState();
 
         static Configuration *instance();
 

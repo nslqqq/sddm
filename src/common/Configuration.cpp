@@ -137,9 +137,9 @@ namespace SDDM {
         d->lastSessions = stateInfo.value("LastSessions", QVariantMap()).toMap();
     }
 
-    void Configuration::save() {
+    void Configuration::saveState() {
         // Save state
-        QSettings stateInfo(d->configPath, QSettings::IniFormat);
+        QSettings stateInfo(d->stateFilePath, QSettings::IniFormat);
 
         stateInfo.setValue("LastUser", d->lastUser);
         stateInfo.setValue("LastSessions", d->lastSessions);

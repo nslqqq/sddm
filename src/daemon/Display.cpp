@@ -168,7 +168,7 @@ namespace SDDM {
         m_displayServer->start();
 
         if ((daemonApp->configuration()->first || daemonApp->configuration()->autoRelogin()) &&
-            !daemonApp->configuration()->autoUser().isEmpty() && !daemonApp->configuration()->lastSession().isEmpty()) {
+            !daemonApp->configuration()->autoUser().isEmpty() && !daemonApp->configuration()->lastSessions().isEmpty()) {
             // reset first flag
             daemonApp->configuration()->first = false;
 
@@ -176,7 +176,7 @@ namespace SDDM {
             m_started = true;
 
             // start session
-            m_authenticator->start(daemonApp->configuration()->autoUser(), daemonApp->configuration()->lastSession());
+            m_authenticator->start(daemonApp->configuration()->autoUser(), daemonApp->configuration()->lastSessions());
 
             // return
             return;
@@ -247,7 +247,7 @@ namespace SDDM {
 
         // save last user and last session
         daemonApp->configuration()->setLastUser(user);
-        daemonApp->configuration()->setLastSession(session);
+        daemonApp->configuration()->setLastSessions(session);
         daemonApp->configuration()->save();
 
         // emit signal

@@ -99,7 +99,7 @@ namespace SDDM {
         m_view->engine()->addImportPath(IMPORTS_INSTALL_DIR);
 
         // create configuration instance
-        m_configuration = new Configuration(CONFIG_FILE);
+        m_configuration = new Configuration();
 
         // read theme metadata
         m_metadata = new ThemeMetadata(QString("%1/metadata.desktop").arg(themePath));

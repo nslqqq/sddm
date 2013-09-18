@@ -51,7 +51,7 @@ namespace SDDM {
         qDebug() << " DAEMON: Initializing...";
 
         // create configuration
-        m_configuration = new Configuration(CONFIG_FILE, this);
+        m_configuration = new Configuration(this);
 
         // set testing parameter
         m_configuration->testing = (arguments().indexOf("--test-mode") != -1);

@@ -21,12 +21,16 @@
 
 #include <QSettings>
 
+#include "Constants.h"
+
 namespace SDDM {
     static Configuration *_instance = nullptr;
 
     class ConfigurationPrivate {
     public:
         QString configPath { "" };
+
+        QString stateFilePath { "" };
 
         QString cursorTheme { "" };
 
@@ -43,7 +47,6 @@ namespace SDDM {
 
         QString sessionsDir { "" };
         bool rememberLastSession { true };
-        QString lastSession { "" };
         QString sessionCommand { "" };
 
         QString facesDir { "" };
@@ -57,18 +60,25 @@ namespace SDDM {
         QStringList hideShells;
 
         bool rememberLastUser { true };
-        QString lastUser { "" };
 
         QString autoUser { "" };
         bool autoRelogin { false };
 
         Configuration::NumState numlock { Configuration::NUM_NONE };
+
+        // State information
+        QString lastUser { "" };
+        QVariantMap lastSessions;
     };
 
-    Configuration::Configuration(const QString &configPath, QObject *parent) : QObject(parent), d(new ConfigurationPrivate()) {
+    Configuration::Configuration(QObject *parent) : QObject(parent), d(new ConfigurationPrivate()) {
         _instance = this;
         // set config path
-        d->configPath = configPath;
+        d->configPath = CONFIG_FILE;
+
+        // set state file
+        d->stateFilePath = STATE_FILE;
+
         // load settings
         load();
     }
@@ -99,7 +109,6 @@ namespace SDDM {
         d->rebootCommand = settings.value("RebootCommand", "").toString();
         d->sessionsDir = appendSlash(settings.value("SessionsDir", "").toString());
         d->rememberLastSession = settings.value("RememberLastSession", d->rememberLastSession).toBool();
-        d->lastSession = settings.value("LastSession", "").toString();
         d->sessionCommand = settings.value("SessionCommand", "").toString();
         d->facesDir = appendSlash(settings.value("FacesDir", "").toString());
         d->themesDir = appendSlash(settings.value("ThemesDir", "").toString());
@@ -109,7 +118,6 @@ namespace SDDM {
         d->hideUsers = settings.value("HideUsers", "").toString().split(' ', QString::SkipEmptyParts);
         d->hideShells = settings.value("HideShells", "").toString().split(' ', QString::SkipEmptyParts);
         d->rememberLastUser = settings.value("RememberLastUser", d->rememberLastUser).toBool();
-        d->lastUser = settings.value("LastUser", "").toString();
         d->autoUser = settings.value("AutoUser", "").toString();
         d->autoRelogin = settings.value("AutoRelogin", d->autoRelogin).toBool();
         minimumVT = settings.value("MinimumVT", minimumVT).toUInt();
@@ -122,42 +130,19 @@ namespace SDDM {
         } else {
             d->numlock = Configuration::NUM_NONE;
         }
+
+        // State information
+        QSettings stateInfo(d->stateFilePath, QSettings::IniFormat);
+        d->lastUser = stateInfo.value("LastUser", "").toString();
+        d->lastSessions = stateInfo.value("LastSessions", QVariantMap()).toMap();
     }
 
     void Configuration::save() {
-        // create settings object
-        QSettings settings(d->configPath, QSettings::IniFormat);
-        // write settings back
-        settings.setValue("CursorTheme", d->cursorTheme);
-        settings.setValue("DefaultPath", d->defaultPath);
-        settings.setValue("ServerPath", d->serverPath);
-        settings.setValue("XauthPath", d->xauthPath);
-        settings.setValue("AuthDir", d->authDir);
-        settings.setValue("HaltCommand", d->haltCommand);
-        settings.setValue("RebootCommand", d->rebootCommand);
-        settings.setValue("SessionsDir", d->sessionsDir);
-        settings.setValue("RememberLastSession", d->rememberLastSession);
-        settings.setValue("LastSession", d->lastSession);
-        settings.setValue("SessionCommand", d->sessionCommand);
-        settings.setValue("FacesDir", d->facesDir);
-        settings.setValue("ThemesDir", d->themesDir);
-        settings.setValue("CurrentTheme", d->currentTheme);
-        settings.setValue("MinimumUid", d->minimumUid);
-        settings.setValue("MaximumUid", d->maximumUid);
-        settings.setValue("HideUsers", d->hideUsers.join(" "));
-        settings.setValue("HideShells", d->hideShells.join(" "));
-        settings.setValue("RememberLastUser", d->rememberLastUser);
-        settings.setValue("LastUser", d->lastUser);
-        settings.setValue("AutoUser", d->autoUser);
-        settings.setValue("AutoRelogin", d->autoRelogin);
-        settings.setValue("MinimumVT", minimumVT);
+        // Save state
+        QSettings stateInfo(d->configPath, QSettings::IniFormat);
 
-        if (d->numlock == NUM_NONE)
-            settings.setValue("Numlock", "none");
-        else if (d->numlock == NUM_SET_ON)
-            settings.setValue("Numlock", "on");
-        else if (d->numlock == NUM_SET_OFF)
-            settings.setValue("Numlock", "off");
+        stateInfo.setValue("LastUser", d->lastUser);
+        stateInfo.setValue("LastSessions", d->lastSessions);
     }
 
     Configuration *Configuration::instance() {
@@ -196,17 +181,17 @@ namespace SDDM {
         return d->sessionsDir;
     }
 
-    const QString &Configuration::lastSession() const {
-        return d->lastSession;
+    const QVariantMap &Configuration::lastSessions() const {
+        return d->lastSessions;
     }
 
     const QString &Configuration::sessionCommand() const {
         return d->sessionCommand;
     }
 
-    void Configuration::setLastSession(const QString &lastSession) {
+    void Configuration::setLastSessions(const QVariantMap &lastSessions) {
         if (d->rememberLastSession)
-            d->lastSession = lastSession;
+            d->lastSessions = lastSessions;
     }
 
     const QString &Configuration::facesDir() const {

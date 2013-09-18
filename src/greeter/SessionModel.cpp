@@ -86,7 +86,7 @@ namespace SDDM {
         }
         // find out index of the last session
         for (int i = 0; i < d->sessions.size(); ++i) {
-            if (d->sessions.at(i)->file == Configuration::instance()->lastSession())
+            if (d->sessions.at(i)->file == Configuration::instance()->lastSessions())
                 d->lastIndex = i;
         }
     }

@@ -31,7 +31,7 @@ namespace SDDM {
         Q_OBJECT
         Q_DISABLE_COPY(Configuration)
     public:
-        Configuration(const QString &configPath, QObject *parent = 0);
+        Configuration(QObject *parent = 0);
         ~Configuration();
 
         void load();
@@ -54,9 +54,6 @@ namespace SDDM {
 
         const QString &sessionsDir() const;
 
-        const QString &lastSession() const;
-        void setLastSession(const QString &lastSession);
-
         const QString &sessionCommand() const;
 
         const QString &facesDir() const;
@@ -70,9 +67,6 @@ namespace SDDM {
         const QStringList &hideUsers() const;
         const QStringList &hideShells() const;
 
-        const QString &lastUser() const;
-        void setLastUser(const QString &lastUser);
-
         const QString &autoUser() const;
         bool autoRelogin() const;
 
@@ -84,6 +78,13 @@ namespace SDDM {
         bool testing { false };
 
         uint minimumVT { 7 };
+
+        // State information
+        const QString &lastUser() const;
+        void setLastUser(const QString &lastUser);
+
+        const QVariantMap &lastSessions() const; // Maps user name -> last session
+        void setLastSessions(const QVariantMap &lastSessions);
 
     private:
         ConfigurationPrivate *d { nullptr };

@@ -68,7 +68,7 @@ namespace SDDM {
 
         // State information
         QString lastUser { "" };
-        QVariantMap lastSessions;
+        QString lastSession { "" };
     };
 
     Configuration::Configuration(QObject *parent) : QObject(parent), d(new ConfigurationPrivate()) {
@@ -134,7 +134,7 @@ namespace SDDM {
         // State information
         QSettings stateInfo(d->stateFilePath, QSettings::IniFormat);
         d->lastUser = stateInfo.value("LastUser", "").toString();
-        d->lastSessions = stateInfo.value("LastSessions", QVariantMap()).toMap();
+        d->lastSession = stateInfo.value("LastSession", "").toString();
     }
 
     void Configuration::saveState() {
@@ -142,7 +142,7 @@ namespace SDDM {
         QSettings stateInfo(d->stateFilePath, QSettings::IniFormat);
 
         stateInfo.setValue("LastUser", d->lastUser);
-        stateInfo.setValue("LastSessions", d->lastSessions);
+        stateInfo.setValue("LastSession", d->lastSession);
     }
 
     Configuration *Configuration::instance() {
@@ -181,17 +181,17 @@ namespace SDDM {
         return d->sessionsDir;
     }
 
-    const QVariantMap &Configuration::lastSessions() const {
-        return d->lastSessions;
+    const QString &Configuration::lastSession() const {
+        return d->lastSession;
     }
 
     const QString &Configuration::sessionCommand() const {
         return d->sessionCommand;
     }
 
-    void Configuration::setLastSessions(const QVariantMap &lastSessions) {
+    void Configuration::setLastSession(const QString &lastSession) {
         if (d->rememberLastSession)
-            d->lastSessions = lastSessions;
+            d->lastSession = lastSession;
     }
 
     const QString &Configuration::facesDir() const {

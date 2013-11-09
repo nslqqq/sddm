@@ -168,7 +168,7 @@ namespace SDDM {
         m_displayServer->start();
 
         if ((daemonApp->configuration()->first || daemonApp->configuration()->autoRelogin()) &&
-            !daemonApp->configuration()->autoUser().isEmpty() && !daemonApp->configuration()->lastSessions().isEmpty()) {
+            !daemonApp->configuration()->autoUser().isEmpty() && !daemonApp->configuration()->lastSession().isEmpty()) {
             // reset first flag
             daemonApp->configuration()->first = false;
 
@@ -176,8 +176,7 @@ namespace SDDM {
             m_started = true;
 
             // start session
-            QString userName = daemonApp->configuration()->autoUser();
-            m_authenticator->start(userName, daemonApp->configuration()->lastSessions()[userName].toString());
+            m_authenticator->start(daemonApp->configuration()->autoUser(), daemonApp->configuration()->lastSession());
 
             // return
             return;
@@ -246,13 +245,9 @@ namespace SDDM {
             return;
         }
 
-        // build updated last sessions map
-        QVariantMap lastSessions = daemonApp->configuration()->lastSessions();
-        lastSessions[user] = session;
-
         // save last user and last session
         daemonApp->configuration()->setLastUser(user);
-        daemonApp->configuration()->setLastSessions(lastSessions);
+        daemonApp->configuration()->setLastSession(session);
         daemonApp->configuration()->saveState();
 
         // emit signal

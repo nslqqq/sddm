@@ -83,8 +83,8 @@ namespace SDDM {
         const QString &lastUser() const;
         void setLastUser(const QString &lastUser);
 
-        const QVariantMap &lastSessions() const; // Maps user name -> last session
-        void setLastSessions(const QVariantMap &lastSessions);
+        const QString &lastSession() const;
+        void setLastSession(const QString &lastSession);
 
     private:
         ConfigurationPrivate *d { nullptr };
